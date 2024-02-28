@@ -1,0 +1,8 @@
+.env
+tmp/
+*.db
+*.sbs
+*.spm
+.DS_Store
+build/
+libs/
