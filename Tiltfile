@@ -20,7 +20,7 @@ auto_init=True
 # Run server
 local_resource(
     name="server",
-    cmd="air",
-    resource_deps=['build-model'],
+    serve_cmd="air",
+    resource_deps=['build-model', 'redis', 'nginx'],
     auto_init=True
 )

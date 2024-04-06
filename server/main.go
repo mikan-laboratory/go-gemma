@@ -87,9 +87,9 @@ func StartServer() {
 		}
 	})
 
-	log.Println("Server is running on http://localhost:3000")
+	log.Println("Server is running on http://localhost:6789")
 
-	if err := http.ListenAndServe(":3000", nil); err != nil {
+	if err := http.ListenAndServe(":6789", nil); err != nil {
 		log.Fatal(err)
 	}
 
