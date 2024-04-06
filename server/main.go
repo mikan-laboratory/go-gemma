@@ -14,8 +14,9 @@ import (
 )
 
 type Request struct {
-	Token string `json:"token"`
-	Text  string `json:"text"`
+	Command string `json:"command"`
+	Token   string `json:"token"`
+	Text    string `json:"text"`
 }
 
 var ctx = context.Background()
