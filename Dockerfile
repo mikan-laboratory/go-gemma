@@ -1,31 +1,64 @@
-# Step 1: Use the official Go image as a parent image
-FROM golang:1.18 as builder
+# Step 1: Build Stage
+FROM golang:1.22 as builder
 
-# Set the Current Working Directory inside the container
 WORKDIR /app
 
-# Copy go mod and sum files
-COPY go.mod go.sum ./
+# Install necessary tools
+RUN apt-get update && apt-get install -y \
+    cmake \
+    make \
+    unzip \
+    python3 \
+    python3-venv \
+    && rm -rf /var/lib/apt/lists/*
 
-# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
+# Create a virtual environment and activate it
+RUN python3 -m venv venv
+ENV PATH="/app/venv/bin:$PATH"
+
+# Install gdown with pip
+RUN pip install gdown
+
+# Copy go.mod, go.sum, and CMakeLists.txt
+COPY go.mod go.sum CMakeLists.txt ./
+
+# Download Go dependencies
 RUN go mod download
 
-# Copy the source code into the container
+# Download and prepare the model
+RUN gdown --id 1JLdITj5WH7kxCUBH4i638MgOlsPpXh4l -O gemma.zip && \
+    unzip gemma.zip -d ./ 
+
+# Assume your model and tokenizer are now directly in the working directory, adjust as necessary
+RUN cmake -B build && \
+    cp ./libs/2b-it-sfp.sbs build/ && \
+    cp ./libs/tokenizer.spm build/
+
+RUN make -C build gemma
+
+# Copy the rest of your source code and build the Go application
 COPY . .
 
-# Build the Go app
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o myapp .
+# Build the Go application
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o go-gemma .
 
-# Step 2: Start a new stage from scratch
-# This is for creating a smaller, more secure final image
-FROM alpine:latest
+# Step 2: Final Stage
+FROM alpine:latest  
 
-RUN apk --no-cache add ca-certificates
+WORKDIR /app
 
-WORKDIR /root/
+# Add Redis
+RUN apk --no-cache add redis
 
-# Copy the Pre-built binary file from the previous stage
-COPY --from=builder /app/myapp .
+# Copy the Go binary and the build directory from the builder stage
+COPY --from=builder /app/go-gemma .
+COPY --from=builder /app/build ./build
 
-# Command to run the executable
-CMD ["./myapp"]
+# Expose the port on which your Go application listens
+EXPOSE 8081
+
+# Use a shell script to start both Redis and your Go application
+COPY start.sh .
+RUN chmod +x start.sh
+
+CMD ["./start.sh"]
