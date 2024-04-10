@@ -5,8 +5,8 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
-	"go-get-gemma/db"
-	"go-get-gemma/model"
+	"go-gemma/db"
+	"go-gemma/model"
 	"log"
 	"net/http"
 
@@ -46,6 +46,8 @@ func StartServer() {
 
 		var token db.Token
 
+		var commandAndText = req.Command + req.Text
+
 		result := database.Where("token = ?", req.Token).First(&token)
 
 		if result.Error != nil {
@@ -54,13 +56,13 @@ func StartServer() {
 		}
 
 		h := sha256.New()
-		h.Write([]byte(req.Text))
+		h.Write([]byte(commandAndText))
 		hashedText := hex.EncodeToString(h.Sum(nil))
 
 		val, err := rdb.Get(ctx, hashedText).Result()
 
 		if err == redis.Nil {
-			output, err := model.AskGemma(req.Text)
+			output, err := model.AskGemma(commandAndText)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -73,8 +75,7 @@ func StartServer() {
 
 			w.WriteHeader(http.StatusOK)
 			json.NewEncoder(w).Encode(map[string]interface{}{
-				"message": "Text processed",
-				"result":  string(output),
+				"result": string(output),
 			})
 		} else if err != nil {
 			log.Printf("Redis error: %v", err)
@@ -82,8 +83,7 @@ func StartServer() {
 		} else {
 			w.WriteHeader(http.StatusOK)
 			json.NewEncoder(w).Encode(map[string]interface{}{
-				"message": "Text processed",
-				"result":  val,
+				"result": val,
 			})
 		}
 	})

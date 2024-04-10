@@ -1,4 +1,4 @@
-module go-get-gemma
+module go-gemma
 
 go 1.22.0
 

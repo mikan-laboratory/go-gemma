@@ -1,0 +1,7 @@
+build
+libs
+redis-data
+tmp
+.env
+tokens.db
+fly.toml

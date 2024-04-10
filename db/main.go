@@ -15,7 +15,7 @@ type Token struct {
 }
 
 func init() {
-	if os.Getenv("APP_ENV") != "production" {
+	if os.Getenv("ENVIRONMENT") != "production" {
 		if err := godotenv.Load(); err != nil {
 			log.Fatal("No .env file found or error loading .env file")
 		}

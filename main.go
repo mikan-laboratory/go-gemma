@@ -1,7 +1,7 @@
 package main
 
 import (
-	"go-get-gemma/server"
+	"go-gemma/server"
 )
 
 func main() {
