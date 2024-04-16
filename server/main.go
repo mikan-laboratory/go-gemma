@@ -63,12 +63,18 @@ func StartServer() {
 
 		if err == redis.Nil {
 			output, err := model.AskGemma(commandAndText)
+
+			log.Printf("Command: %s, Text: %s, Result: %s", req.Command, req.Text, string(output))
+
 			if err != nil {
+				log.Printf(err.Error())
+
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 
 			err = rdb.Set(ctx, hashedText, output, 0).Err()
+
 			if err != nil {
 				log.Printf("Failed to save result in Redis: %v", err)
 			}
