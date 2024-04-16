@@ -5,8 +5,6 @@ WORKDIR /app
 
 # Install necessary tools
 RUN apt-get update && apt-get install -y \
-    cmake \
-    make \
     unzip \
     python3 \
     python3-venv \
@@ -20,38 +18,42 @@ ENV PATH="/app/venv/bin:$PATH"
 RUN pip install gdown
 
 # Copy go.mod, go.sum, and CMakeLists.txt
-COPY go.mod go.sum CMakeLists.txt ./
+COPY go.mod go.sum ./
 
 # Download Go dependencies
 RUN go mod download
 
 # Download and prepare the model
-RUN gdown --id 1JLdITj5WH7kxCUBH4i638MgOlsPpXh4l -O gemma.zip && \
-    unzip gemma.zip -d ./ 
+RUN gdown --id 1UexYG4stAjwyryQZxckJDxyi5A0w7WjN -O gemma-libs.zip && \
+    unzip gemma-libs.zip -d ./
 
 # Assume your model and tokenizer are now directly in the working directory, adjust as necessary
-RUN cmake -B build && \
-    cp ./libs/2b-it-sfp.sbs build/ && \
-    cp ./libs/tokenizer.spm build/
-
-RUN make -C build gemma
+RUN mkdir -p build && \
+    cp ./gemma-libs/2b-it-sfp.sbs build/2b-it-sfp.sbs && \
+    cp ./gemma-libs/tokenizer.spm build/tokenizer.spm && \
+    cp ./gemma-libs/gemma build/gemma
 
 # Copy the rest of your source code and build the Go application
 COPY . .
 
 # Build the Go application
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o go-gemma .
+RUN go build -a -installsuffix cgo -o go-gemma .
 
 # Step 2: Final Stage
-FROM alpine:latest  
+FROM debian:12.5-slim
 
 WORKDIR /app
 
 # Add Redis
-RUN apk --no-cache add redis
+RUN apt-get update && \
+    apt-get install -y redis-server \
+    gcc \
+    libc6-dev \
+    libsqlite3-dev && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy the Go binary and the build directory from the builder stage
-COPY --from=builder /app/go-gemma .
+COPY --from=builder /app/go-gemma ./go-gemma
 COPY --from=builder /app/build ./build
 
 # Expose the port on which your Go application listens
@@ -59,6 +61,7 @@ EXPOSE 8081
 
 # Use a shell script to start both Redis and your Go application
 COPY start.sh .
+RUN chmod +x ./build/gemma
 RUN chmod +x start.sh
 
 CMD ["./start.sh"]

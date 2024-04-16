@@ -1,5 +1,5 @@
 ENVIRONMENT ?= production
-TOKEN ?= 8e712f41d6015bc34c27f8071b42e7542131d2d7d00923668a73866059ce0c6b
+TOKEN ?= 68850cc7becba8a8cca282354f
 
 IMAGE_NAME ?= go-gemma-image
 CONTAINER_NAME ?= go-gemma-container
@@ -13,7 +13,7 @@ build:
 	docker build -t $(IMAGE_NAME) .
 
 run:
-	docker run -d --name $(CONTAINER_NAME) -p 8080:8080 \
+	docker run -d --name $(CONTAINER_NAME) -p 8081:8081 \
 	-e ENVIRONMENT=$(ENVIRONMENT) \
 	-e TOKEN=$(TOKEN) \
 	$(IMAGE_NAME)
