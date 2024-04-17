@@ -5,6 +5,8 @@ WORKDIR /app
 
 # Install necessary tools
 RUN apt-get update && apt-get install -y \
+    cmake \
+    make \
     unzip \
     python3 \
     python3-venv \
@@ -18,20 +20,20 @@ ENV PATH="/app/venv/bin:$PATH"
 RUN pip install gdown
 
 # Copy go.mod, go.sum, and CMakeLists.txt
-COPY go.mod go.sum ./
+COPY go.mod go.sum CMakeLists.txt ./
 
 # Download Go dependencies
 RUN go mod download
 
 # Download and prepare the model
-RUN gdown --id 1UexYG4stAjwyryQZxckJDxyi5A0w7WjN -O gemma-libs.zip && \
+RUN gdown --id 1Blx_O2FWV2-h71uGia0wtRb-5IaDwRX_ -O gemma-libs.zip && \
     unzip gemma-libs.zip -d ./
 
 # Assume your model and tokenizer are now directly in the working directory, adjust as necessary
-RUN mkdir -p build && \
+RUN cmake -B build && \
     cp ./gemma-libs/2b-it-sfp.sbs build/2b-it-sfp.sbs && \
     cp ./gemma-libs/tokenizer.spm build/tokenizer.spm && \
-    cp ./gemma-libs/gemma build/gemma
+    make -C build gemma
 
 # Copy the rest of your source code and build the Go application
 COPY . .
@@ -61,7 +63,8 @@ EXPOSE 8081
 
 # Use a shell script to start both Redis and your Go application
 COPY start.sh .
-RUN chmod +x ./build/gemma
+
+RUN chmod +x ./build/_deps/gemma-build/gemma
 RUN chmod +x start.sh
 
 CMD ["./start.sh"]

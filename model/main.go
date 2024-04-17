@@ -16,7 +16,7 @@ func sanitizeText(text string) string {
 func AskGemma(input string) ([]byte, error) {
 	sanitized := sanitizeText(input)
 
-	cmd := exec.Command("./build/gemma", "--tokenizer", "./build/tokenizer.spm", "--compressed_weights", "./build/2b-it-sfp.sbs", "--model", "2b-it", "--verbosity", "0")
+	cmd := exec.Command("./build/_deps/gemma-build/gemma", "--tokenizer", "./build/tokenizer.spm", "--compressed_weights", "./build/2b-it-sfp.sbs", "--model", "2b-it", "--verbosity", "0")
 
 	stdin, err := cmd.StdinPipe()
 	if err != nil {

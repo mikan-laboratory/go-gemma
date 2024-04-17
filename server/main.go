@@ -67,7 +67,7 @@ func StartServer() {
 			log.Printf("Command: %s, Text: %s, Result: %s", req.Command, req.Text, string(output))
 
 			if err != nil {
-				log.Printf(err.Error())
+				log.Print(err.Error())
 
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
