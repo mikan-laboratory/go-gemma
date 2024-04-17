@@ -2,7 +2,6 @@ package model
 
 import (
 	"io"
-	"log"
 	"os/exec"
 	"strings"
 )
@@ -51,8 +50,6 @@ func AskGemma(input string) ([]byte, error) {
 			}
 			return nil, err
 		}
-
-		log.Printf("Model output: %s", string(buffer[:n]))
 
 		output = append(output, buffer[:n]...)
 
