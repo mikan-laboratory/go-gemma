@@ -17,10 +17,11 @@ RUN apt-get update && apt-get install -y \
     libclang-16-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Download and install Go
-RUN curl -LO "https://golang.org/dl/go1.22.2.linux-amd64.tar.gz" \
-    && tar -xzf go1.22.2.linux-amd64.tar.gz -C /usr/local \
-    && rm go1.22.2.linux-amd64.tar.gz
+# Download and install Go matching the architecture of the running container
+RUN apt-get update && apt-get install -y --no-install-recommends wget \
+    && wget -qO- https://golang.org/dl/go1.22.2.linux-$(dpkg --print-architecture).tar.gz | tar -xz -C /usr/local \
+    && apt-get purge -y --auto-remove wget \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set the Go environment paths
 ENV GOROOT=/usr/local/go
@@ -53,11 +54,6 @@ RUN cmake -B build -DCMAKE_C_COMPILER=clang-16 -DCMAKE_CXX_COMPILER=clang++-16 &
     cp ./gemma-libs/2b-it-sfp.sbs build/2b-it-sfp.sbs && \
     cp ./gemma-libs/tokenizer.spm build/tokenizer.spm && \
     make -C build gemma
-
-# Set CGO to use Clang explicitly
-ENV CC=clang-16
-ENV CXX=clang++-16
-ENV CGO_ENABLED=1
 
 COPY . .
 
