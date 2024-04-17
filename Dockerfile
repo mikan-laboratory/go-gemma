@@ -44,7 +44,7 @@ RUN go mod download
 RUN gdown --id 1Blx_O2FWV2-h71uGia0wtRb-5IaDwRX_ -O gemma-libs.zip && \
     unzip gemma-libs.zip -d ./
 
-# Set clang as the default compiler
+# Set clang as the default compiler for all C/C++ builds including CGO
 RUN update-alternatives --install /usr/bin/cc cc /usr/bin/clang-16 60 \
     && update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-16 60
 
@@ -54,12 +54,10 @@ RUN cmake -B build -DCMAKE_C_COMPILER=clang-16 -DCMAKE_CXX_COMPILER=clang++-16 &
     cp ./gemma-libs/tokenizer.spm build/tokenizer.spm && \
     make -C build gemma
 
-# Remove clang as default to avoid any runtime issues
-RUN update-alternatives --remove cc /usr/bin/clang-16 \
-    && update-alternatives --remove c++ /usr/bin/clang++-16
-
-# Copy the rest of your source code
-COPY . .
+# Set CGO to use Clang explicitly
+ENV CC=clang-16
+ENV CXX=clang++-16
+ENV CGO_ENABLED=1
 
 # Build the Go application
 RUN go build -a -installsuffix cgo -o go-gemma .
