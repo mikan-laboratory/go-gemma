@@ -1,19 +1,60 @@
 # GoGemma
 
-## Description
-
 Simple Go server that takes a token, command, and text and returns response from Gemma (2B parameter Google LLM). Uses Redis to cache responses. Easy deployment with Fly.io.
 
 Leverages [Gemma CPP](https://github.com/google/gemma.cpp).
 
 Developed for the `RapidRead` feature in [GhostRemix](https://ghostremix.com).
 
-## Prerequisites
+## Table of Contents
+
+- [Local Development](#local-development)
+  - [Dependencies](#dependencies)
+  - [Get the code](#get-the-code)
+    - [GitHub UI](#github-ui)
+    - [GitHub CLI](#github-cli)
+- [Quickstart](#quickstart)
+- [Test Docker Build](#test-docker-build)
+- [Deploy to Fly.io](#deploy-to-flyio)
+  - [Prerequisites](#prerequisites-1)
+  - [GitHub Actions](#github-actions)
+
+## Local Development
+
+## Dependencies
 
 - Go 1.22
 - Make
 - Air
 - Tilt
+
+### Get the code
+
+Use the template to create your own repository.
+
+#### GitHub UI
+
+- Navigate to the [repository](https://github.com/mikan-laboratory/go-gemma), click `Use this template`, and follow the instructions.
+
+#### GitHub CLI
+
+- Get the [GitHub CLI](https://cli.github.com/)
+
+```bash
+# Step 1: Clone the template repository
+
+git clone https://github.com/mikab-laboratory/go-gemma.git new-project
+
+cd new-project
+
+# Step 2: Create a new repository on GitHub
+
+gh repo create username/new-project --private --source=.
+
+# Step 3: Push the cloned contents to the new repository
+
+git push --set-upstream origin main
+```
 
 ## Quickstart
 
