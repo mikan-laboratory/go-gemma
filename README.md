@@ -1,4 +1,4 @@
-# Go Gemma
+# GoGemma
 
 ## Description
 
