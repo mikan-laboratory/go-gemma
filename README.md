@@ -4,6 +4,8 @@
 
 Simple Go server that takes a token, command, and text and returns response from Gemma (2B parameter Google LLM). Uses Redis to cache responses. Easy deployment with Fly.io.
 
+Leverages [Gemma CPP](https://github.com/google/gemma.cpp).
+
 Developed for the `RapidRead` feature in [GhostRemix](https://ghostremix.com).
 
 ## Prerequisites
