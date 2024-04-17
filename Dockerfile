@@ -59,6 +59,8 @@ ENV CC=clang-16
 ENV CXX=clang++-16
 ENV CGO_ENABLED=1
 
+COPY . .
+
 # Build the Go application
 RUN go build -a -installsuffix cgo -o go-gemma .
 
