@@ -23,7 +23,7 @@ func init() {
 }
 
 func InitDB() *gorm.DB {
-	db, err := gorm.Open(sqlite.Open("tokens.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("data/tokens.db"), &gorm.Config{})
 
 	if err != nil {
 		log.Fatal("Failed to connect to database")

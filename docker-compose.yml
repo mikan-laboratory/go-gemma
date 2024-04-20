@@ -7,5 +7,5 @@ services:
       - "6379:6379"
     command: redis-server --save 20 1
     volumes:
-      - ./redis-data:/data
+      - ./data:/data
     restart: always

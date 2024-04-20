@@ -59,7 +59,7 @@ git push --set-upstream origin main
 ## Quickstart
 
 1. Create `.env` file from `.env.example`.
-2. Download Gemma from [Kaggle](https://www.kaggle.com/models/google/gemma/gemmaCpp/2b-it-sfp) or our Google drive link [here](https://drive.google.com/file/d/1Blx_O2FWV2-h71uGia0wtRb-5IaDwRX_/view?usp=sharing).
+2. Download Gemma from our [Google Drive](https://drive.google.com/file/d/1Blx_O2FWV2-h71uGia0wtRb-5IaDwRX_/view?usp=sharing) or [Kaggle](https://www.kaggle.com/models/google/gemma/gemmaCpp/2b-it-sfp).
 3. Create `libs` directory and unpack zip content there.
 4. Run `tilt up` in project root.
 5. Test with the command below.

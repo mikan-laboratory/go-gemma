@@ -77,6 +77,8 @@ RUN apt-get update && \
 COPY --from=builder /app/go-gemma ./go-gemma
 COPY --from=builder /app/build ./build
 
+RUN mkdir -p data
+
 # Expose the port on which your Go application listens
 EXPOSE 8081
 
