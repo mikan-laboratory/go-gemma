@@ -8,7 +8,6 @@ import (
 
 func sanitizeText(text string) string {
 	sanitized := strings.ReplaceAll(text, "'", `'\''`)
-
 	return sanitized
 }
 
@@ -21,41 +20,25 @@ func AskGemma(input string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer stdin.Close()
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		return nil, err
 	}
-	defer stdout.Close()
 
 	if err := cmd.Start(); err != nil {
 		return nil, err
 	}
 
-	_, err = stdin.Write([]byte(sanitized + "\n\nPlease output double new line at the end.\n"))
+	_, err = stdin.Write([]byte(sanitized + "\n"))
 	if err != nil {
 		return nil, err
 	}
 	stdin.Close()
 
-	var output []byte
-	buffer := make([]byte, 4096)
-
-	for {
-		n, err := stdout.Read(buffer)
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			return nil, err
-		}
-
-		output = append(output, buffer[:n]...)
-
-		if strings.Contains(string(output), "\n\n") {
-			return output, nil
-		}
+	output, err := io.ReadAll(stdout)
+	if err != nil {
+		return nil, err
 	}
 
 	if err := cmd.Wait(); err != nil {
